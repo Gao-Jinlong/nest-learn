@@ -24,6 +24,8 @@ import { RolesGuard } from './aop/RolesGuard';
 import { LoggingInterceptor } from './aop/LoggingInterceptor';
 import { ValidationPipe } from './aop/ValidationPipe';
 import { HttpExceptionFilter } from './aop/HttpExceptionFilter';
+import { ForbiddenException } from './aop/ForbiddenException';
+import { ForbiddenExceptionFilter } from './aop/ForbiddenException.filter';
 @Controller('aaa')
 @UseGuards(RolesGuard) // 路由守卫
 @UseInterceptors(new LoggingInterceptor()) // 拦截器
@@ -45,8 +47,9 @@ export class AaaController
   }
 
   @Get()
+  @UseFilters(ForbiddenExceptionFilter)
   findAll() {
-    return this.aaaService.findAll();
+    throw new ForbiddenException();
   }
 
   @Get(':id')

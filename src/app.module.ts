@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AaaModule } from './aaa/aaa.module';
 import { BbbModule } from './bbb/bbb.module';
+import { DecorateModule } from './decorate/decorate.module';
 
 @Module({
-  imports: [AaaModule, BbbModule],
+  imports: [AaaModule, BbbModule, DecorateModule],
   controllers: [AppController],
   // IoC provider 支持的几种注入方式，useClass, useValue, useFactory, useExisting
   providers: [
