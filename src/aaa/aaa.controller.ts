@@ -11,12 +11,24 @@ import {
   OnModuleDestroy,
   BeforeApplicationShutdown,
   OnApplicationShutdown,
+  UseGuards,
+  UseInterceptors,
+  ParseIntPipe,
+  UsePipes,
+  UseFilters,
 } from '@nestjs/common';
 import { AaaService } from './aaa.service';
 import { CreateAaaDto } from './dto/create-aaa.dto';
 import { UpdateAaaDto } from './dto/update-aaa.dto';
-
+import { RolesGuard } from './aop/RolesGuard';
+import { LoggingInterceptor } from './aop/LoggingInterceptor';
+import { ValidationPipe } from './aop/ValidationPipe';
+import { HttpExceptionFilter } from './aop/HttpExceptionFilter';
 @Controller('aaa')
+@UseGuards(RolesGuard) // 路由守卫
+@UseInterceptors(new LoggingInterceptor()) // 拦截器
+@UsePipes(ValidationPipe) // 管道
+@UseFilters(new HttpExceptionFilter()) // 异常过滤
 export class AaaController
   implements
     OnModuleInit,
@@ -38,7 +50,8 @@ export class AaaController
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
+    console.log('typeof id after ParseIntPipe: ', typeof id);
     return this.aaaService.findOne(+id);
   }
 
