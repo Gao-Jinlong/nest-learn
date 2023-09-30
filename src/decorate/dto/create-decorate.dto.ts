@@ -1,1 +1,4 @@
-export class CreateDecorateDto {}
+export class CreateDecorateDto {
+  name: string;
+  age: number;
+}
