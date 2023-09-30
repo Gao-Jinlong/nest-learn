@@ -37,8 +37,10 @@ import { FailFilter } from 'src/fail/fail.filter';
 import { FailException } from 'src/fail/FailException';
 import { RoleGuard } from 'src/role/role.guard';
 import { Role } from 'src/role/role.enum';
+import { Custom, CustomClass, MyHeaders } from 'src/custom/custom.decorator';
+
+@CustomClass('decorate') // 自定义类装饰器
 @Controller({
-  path: 'decorate',
   host: ':host.0.0.1', // 设置后只有当请求主机匹配指定值时，才会路由 Controller 中的方法
 })
 @UseGuards(UserGuard) // 使用 guard
@@ -140,6 +142,21 @@ export class DecorateController {
   findOne(@Param('id', ParseIntPipe) id: number, @Param('user') user: Role) {
     console.log('get:id', typeof id);
     return { user, msg: this.decorateService.findOne(id) };
+  }
+
+  // 自定义装饰器
+  @Custom('group/:id', [Role.Admin, Role.User])
+  findGroup(
+    @Param('id', ParseIntPipe) id: number,
+    @MyHeaders() headers: Record<string, any>,
+    @Query('user') role: Role,
+  ) {
+    return {
+      msg: 'findGroup',
+      id,
+      role,
+      headers,
+    };
   }
 
   @Patch(':id')
