@@ -25,6 +25,7 @@ import {
   Header,
   Redirect,
   Render,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { DecorateService } from './decorate.service';
 import { CreateDecorateDto } from './dto/create-decorate.dto';
@@ -32,6 +33,10 @@ import { UpdateDecorateDto } from './dto/update-decorate.dto';
 import { CustomErrorFilter } from './aop/CustomError.filter';
 import { UserGuard } from './aop/User.guard';
 import { NextFunction, Request, Response } from 'express';
+import { FailFilter } from 'src/fail/fail.filter';
+import { FailException } from 'src/fail/FailException';
+import { RoleGuard } from 'src/role/role.guard';
+import { Role } from 'src/role/role.enum';
 @Controller({
   path: 'decorate',
   host: ':host.0.0.1', // 设置后只有当请求主机匹配指定值时，才会路由 Controller 中的方法
@@ -123,15 +128,18 @@ export class DecorateController {
 
   @Get('user')
   @Render('user') // 指定视图模板
+  @UseFilters(FailFilter)
   user() {
+    throw new FailException('error msg', 'error cause');
     return { name: 'Ginlon', age: 18 }; // 指定视图模板后，可以直接返回数据，不需要手动渲染
   }
 
   @Get(':id')
-  @UseGuards(UserGuard) // 使用 guard
-  @SetMetadata('roles', ['admin'])
-  findOne(@Param('id') id: string) {
-    return this.decorateService.findOne(+id);
+  @UseGuards(UserGuard, RoleGuard) // 使用 guard
+  @SetMetadata('roles', [Role.Admin])
+  findOne(@Param('id', ParseIntPipe) id: number, @Param('user') user: Role) {
+    console.log('get:id', typeof id);
+    return { user, msg: this.decorateService.findOne(id) };
   }
 
   @Patch(':id')
