@@ -11,6 +11,8 @@ import {
   OnModuleDestroy,
   BeforeApplicationShutdown,
   OnApplicationShutdown,
+  Next,
+  Res,
 } from '@nestjs/common';
 import { BbbService } from './bbb.service';
 import { CreateBbbDto } from './dto/create-bbb.dto';
@@ -37,9 +39,14 @@ export class BbbController
     return this.bbbService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bbbService.findOne(+id);
+  @Get('user/:id')
+  findOne(@Param('id') id: string, @Next() next, @Res() res) {
+    const idNum = +id;
+    if (Number.isNaN(idNum)) {
+      next();
+    } else {
+      res.send(this.bbbService.findOne(idNum));
+    }
   }
 
   @Patch(':id')
@@ -52,6 +59,18 @@ export class BbbController
     return this.bbbService.remove(+id);
   }
 
+  @Get('hello1')
+  hello() {
+    return 'hello1';
+  }
+  @Get('hello2')
+  hello2() {
+    return 'hello2';
+  }
+  @Get('hi')
+  hi() {
+    return 'hi';
+  }
   onApplicationBootstrap() {
     console.log('Bbb Controller onApplicationBootstrap');
   }

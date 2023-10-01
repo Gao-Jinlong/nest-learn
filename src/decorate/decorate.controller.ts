@@ -33,11 +33,15 @@ import { UpdateDecorateDto } from './dto/update-decorate.dto';
 import { CustomErrorFilter } from './aop/CustomError.filter';
 import { UserGuard } from './aop/User.guard';
 import { NextFunction, Request, Response } from 'express';
-import { FailFilter } from 'src/fail/fail.filter';
-import { FailException } from 'src/fail/FailException';
-import { RoleGuard } from 'src/role/role.guard';
-import { Role } from 'src/role/role.enum';
-import { Custom, CustomClass, MyHeaders } from 'src/custom/custom.decorator';
+import { FailFilter } from 'src/aop/fail/fail.filter';
+import { FailException } from 'src/aop/fail/FailException';
+import { RoleGuard } from 'src/aop/role/role.guard';
+import { Role } from 'src/aop/role/role.enum';
+import {
+  Custom,
+  CustomClass,
+  MyHeaders,
+} from 'src/aop/custom/custom.decorator';
 
 @CustomClass('decorate') // 自定义类装饰器
 @Controller({

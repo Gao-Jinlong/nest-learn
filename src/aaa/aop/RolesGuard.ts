@@ -6,7 +6,7 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    console.log('RolesGuard canActivate, context: ', context);
+    // console.log('RolesGuard canActivate, context: ', context);
     return true;
   }
 }

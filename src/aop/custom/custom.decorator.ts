@@ -7,8 +7,8 @@ import {
   applyDecorators,
   createParamDecorator,
 } from '@nestjs/common';
-import { Role } from 'src/role/role.enum';
-import { RoleGuard } from 'src/role/role.guard';
+import { Role } from 'src/aop/role/role.enum';
+import { RoleGuard } from 'src/aop/role/role.guard';
 
 // 自定义方法装饰器
 export function Custom(path: string, roles: Role[]) {
