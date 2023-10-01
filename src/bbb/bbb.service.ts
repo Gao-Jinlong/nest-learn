@@ -11,6 +11,7 @@ import {
 import { CreateBbbDto } from './dto/create-bbb.dto';
 import { UpdateBbbDto } from './dto/update-bbb.dto';
 import { AaaService } from 'src/aaa/aaa.service';
+import { AaaModule } from 'src/aaa/aaa.module';
 @Injectable()
 export class BbbService
   implements

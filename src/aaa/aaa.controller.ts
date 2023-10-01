@@ -16,6 +16,7 @@ import {
   ParseIntPipe,
   UsePipes,
   UseFilters,
+  Inject,
 } from '@nestjs/common';
 import { AaaService } from './aaa.service';
 import { CreateAaaDto } from './dto/create-aaa.dto';
@@ -24,7 +25,6 @@ import { RolesGuard } from './aop/RolesGuard';
 import { LoggingInterceptor } from './aop/LoggingInterceptor';
 import { ValidationPipe } from './aop/ValidationPipe';
 import { HttpExceptionFilter } from './aop/HttpExceptionFilter';
-import { ForbiddenException } from './aop/ForbiddenException';
 import { ForbiddenExceptionFilter } from './aop/ForbiddenException.filter';
 @Controller('aaa')
 @UseGuards(RolesGuard) // 路由守卫
@@ -39,7 +39,12 @@ export class AaaController
     BeforeApplicationShutdown,
     OnApplicationShutdown
 {
-  constructor(private readonly aaaService: AaaService) {}
+  constructor(
+    private readonly aaaService: AaaService,
+    // dynamic module exports
+    @Inject('DYNAMIC_OPTIONS_CONFIG')
+    private readonly options: Record<string, any>,
+  ) {}
 
   @Post()
   create(@Body() createAaaDto: CreateAaaDto) {
@@ -50,7 +55,7 @@ export class AaaController
   @UseFilters(ForbiddenExceptionFilter)
   findAll() {
     // throw new ForbiddenException();
-    return this.aaaService.findAll();
+    return { msg: this.aaaService.findAll(), dynamicOptions: this.options };
   }
 
   @Get(':id')
