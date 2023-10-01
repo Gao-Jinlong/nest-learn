@@ -5,12 +5,18 @@ import {
   OnApplicationShutdown,
   OnModuleDestroy,
   OnModuleInit,
+  forwardRef,
 } from '@nestjs/common';
 import { BbbService } from './bbb.service';
 import { BbbController } from './bbb.controller';
+import { AaaModule } from 'src/aaa/aaa.module';
 
 @Module({
   // imports: [AaaModule], // 导入模块
+  imports: [
+    // 循环引用时单独创建每个模块，然后导入
+    forwardRef(() => AaaModule),
+  ],
   controllers: [BbbController],
   providers: [BbbService],
 })

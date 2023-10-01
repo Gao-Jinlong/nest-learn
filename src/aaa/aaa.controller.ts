@@ -49,7 +49,8 @@ export class AaaController
   @Get()
   @UseFilters(ForbiddenExceptionFilter)
   findAll() {
-    throw new ForbiddenException();
+    // throw new ForbiddenException();
+    return this.aaaService.findAll();
   }
 
   @Get(':id')

@@ -5,6 +5,8 @@ import {
   OnModuleDestroy,
   BeforeApplicationShutdown,
   OnApplicationShutdown,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateBbbDto } from './dto/create-bbb.dto';
 import { UpdateBbbDto } from './dto/update-bbb.dto';
@@ -20,6 +22,10 @@ export class BbbService
 {
   constructor(
     // 导入服务
+    @Inject(
+      // provider 循环引用时，使用 forwardRef
+      forwardRef(() => AaaService),
+    )
     private aaaService: AaaService,
   ) {}
   create(createBbbDto: CreateBbbDto) {
@@ -27,11 +33,11 @@ export class BbbService
   }
 
   findAll() {
-    return `This action returns all bbb` + this.aaaService.findAll();
+    return `This action returns all bbb`;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} bbb`;
+    return `This action returns a #${id} bbb` + this.aaaService.findOne(id);
   }
 
   update(id: number, updateBbbDto: UpdateBbbDto) {
