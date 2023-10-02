@@ -14,6 +14,16 @@ import {
   Next,
   Res,
   UseInterceptors,
+  Query,
+  ParseIntPipe,
+  HttpStatus,
+  HttpException,
+  ParseFloatPipe,
+  ParseBoolPipe,
+  ParseArrayPipe,
+  ParseEnumPipe,
+  ParseUUIDPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { BbbService } from './bbb.service';
 import { CreateBbbDto } from './dto/create-bbb.dto';
@@ -79,6 +89,75 @@ export class BbbController
   @Get('hi')
   hi() {
     return 'hi';
+  }
+
+  @Get('query')
+  query(
+    @Query(
+      'id',
+      new ParseIntPipe({
+        // errorHttpStatusCode: HttpStatus.NOT_FOUND,  // 修改错误返回状态码
+        exceptionFactory: (msg) => {
+          console.log(msg);
+          throw new HttpException('xxx' + msg, HttpStatus.NOT_FOUND);
+        },
+      }),
+    )
+    id: number,
+    @Query('float', ParseFloatPipe)
+    float: number,
+    @Query('bool', ParseBoolPipe)
+    bool: boolean,
+    @Query(
+      'array',
+      new ParseArrayPipe({
+        // 需要依赖 class-transformer, class-validator
+        items: Number, // 指定数组元素类型
+        separator: ',', // 指定分隔符
+        optional: true, // 是否可选
+      }),
+    )
+    array: number[],
+    @Query('enumParse', new ParseEnumPipe(HttpStatus)) // 枚举类型转换，如果入参不在枚举范围内则会报错
+    enumParse: HttpStatus,
+    @Query('uuid', new ParseUUIDPipe())
+    uuid: string,
+    @Query('defaultValue', new DefaultValuePipe('default'))
+    defaultValue: string,
+  ) {
+    // http://127.0.0.1:3000/bbb/query?id=123&float=1.23&bool=false&array=1,2,3&enumParse=NOT_FOUND&uuid=41859bbe-3642-4f86-959a-03b8c70da8be
+    return {
+      query: {
+        id: {
+          type: typeof id,
+          value: id,
+        },
+        float: {
+          type: typeof float,
+          value: float,
+        },
+        bool: {
+          type: typeof bool,
+          value: bool,
+        },
+        array: {
+          type: typeof array,
+          value: array,
+        },
+        enumParse: {
+          type: typeof enumParse,
+          value: enumParse,
+        },
+        uuid: {
+          type: typeof uuid,
+          value: uuid,
+        },
+        defaultValue: {
+          type: typeof defaultValue,
+          value: defaultValue,
+        },
+      },
+    };
   }
   onApplicationBootstrap() {
     console.log('Bbb Controller onApplicationBootstrap');
