@@ -5,6 +5,8 @@ import { AaaModule } from './aaa/aaa.module';
 import { BbbModule } from './bbb/bbb.module';
 import { DecorateModule } from './decorate/decorate.module';
 import { DynamicallyModule } from './dynamically/dynamically.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TimeInterceptor } from './aop/time/time.interceptor';
 
 @Module({
   imports: [AaaModule, BbbModule, DecorateModule, DynamicallyModule],
@@ -49,6 +51,10 @@ import { DynamicallyModule } from './dynamically/dynamically.module';
     {
       provide: 'GitHub', // 别名
       useExisting: 'github', // 使用已经存在的 token
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TimeInterceptor,
     },
   ],
 })

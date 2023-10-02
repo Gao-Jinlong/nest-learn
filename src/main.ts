@@ -7,6 +7,7 @@ import { HttpExceptionFilter } from './aaa/aop/HttpExceptionFilter';
 import * as session from 'express-session';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { TimeInterceptor } from './aop/time/time.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -28,6 +29,9 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter()); // 全局异常过滤
   // aop 执行顺序
   // request => Middleware => Guard => Interceptor(before) => Pipe(处理参数) => handler => Interceptor(after) => Exception Filter => response
+
+  // app.useGlobalInterceptors(new TimeInterceptor()); // 全局注入拦截器无法在拦截器类中注入依赖，因为拦截器类不是一个 provider，所以无法使用 @Injectable() 装饰器
+  // 若想在全局的拦截器中使用依赖注入，可以使用 nest 提供的 APP_INTERCEPTOR 将拦截器注册为全局的 provider，nest 自动实例化并注入依赖
 
   await app.listen(3000);
 

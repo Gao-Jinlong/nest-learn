@@ -13,10 +13,12 @@ import {
   OnApplicationShutdown,
   Next,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BbbService } from './bbb.service';
 import { CreateBbbDto } from './dto/create-bbb.dto';
 import { UpdateBbbDto } from './dto/update-bbb.dto';
+import { TimeInterceptor } from 'src/aop/time/time.interceptor';
 
 @Controller('bbb')
 export class BbbController
@@ -35,7 +37,14 @@ export class BbbController
   }
 
   @Get()
-  findAll() {
+  @UseInterceptors(TimeInterceptor)
+  async findAll() {
+    // throw new Error('findAll error');
+    // await new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     resolve('timeout');
+    //   }, 2000);
+    // });
     return this.bbbService.findAll();
   }
 
