@@ -1,0 +1,76 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Upload</title>
+    <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <input id="fileInput" type="file" multiple />
+    <script>
+      const fileInput = document.querySelector('#fileInput');
+
+      function getFileFormData() {
+        const data = new FormData();
+        data.set('file', fileInput.files[0]);
+        data.set('name', 'Ginlon');
+        data.set('age', 18);
+
+        return data;
+      }
+
+      function getFilesFormData() {
+        const data = new FormData();
+
+        [...fileInput.files].forEach((file) => {
+          data.append('files', file);
+        });
+        data.set('name', 'Ginlon');
+        data.set('age', 18);
+
+        return data;
+      }
+
+      function getMultipleFilesFormData() {
+        const data = new FormData();
+
+        data.set('avatar', fileInput.files[0]);
+        data.set('background', fileInput.files[1]);
+        data.set('name', 'Ginlon');
+        data.set('age', 18);
+
+        return data;
+      }
+
+      const anyFields = ['someFile', 'maybeFile', 'anotherFile'];
+      function getAnyFilesFormData() {
+        const data = new FormData();
+
+        [...fileInput.files].forEach((file, index) => {
+          data.append(anyFields[index % 3], file);
+        });
+        data.set('name', 'Ginlon');
+        data.set('age', 18);
+
+        return data;
+      }
+
+      async function uploadFiles() {
+        // const formData = getFilesFormData();
+        const formData = getFileFormData();
+        // const formData = getAnyFilesFormData();
+        // const formData = getMultipleFilesFormData();
+        const res = await axios.post(
+          'http://localhost:3000/bbb/upload',
+          // 'http://localhost:3000/bbb/uploadFiles',
+          // 'http://localhost:3000/bbb/uploadAnyField',
+          formData,
+        );
+
+        console.log('res', res);
+      }
+
+      fileInput.onchange = uploadFiles;
+    </script>
+  </body>
+</html>

@@ -9,7 +9,9 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { TimeInterceptor } from './aop/time/time.interceptor';
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true, // 支持跨域
+  });
 
   app.use(
     session({

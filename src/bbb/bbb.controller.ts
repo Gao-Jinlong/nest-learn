@@ -25,12 +25,26 @@ import {
   ParseUUIDPipe,
   DefaultValuePipe,
   ValidationPipe,
+  UploadedFile,
+  UploadedFiles,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { BbbService } from './bbb.service';
 import { CreateBbbDto } from './dto/create-bbb.dto';
 import { UpdateBbbDto } from './dto/update-bbb.dto';
 import { TimeInterceptor } from 'src/aop/time/time.interceptor';
 import { MyValidationPipe } from 'src/aop/myValidation/myValidation.pipe';
+import {
+  AnyFilesInterceptor,
+  FileFieldsInterceptor,
+  FileInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
+import { storage } from './fileStorage';
+import { FileSizeValidationPipe } from 'src/aop/fileSizeValidation/fileSizeValidation.pipe';
+import { MyFileValidator } from './myFileValidator';
 
 @Controller('bbb')
 export class BbbController
@@ -163,6 +177,89 @@ export class BbbController
         },
       },
     };
+  }
+
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads',
+    }),
+  )
+  uploadFile(
+    @UploadedFile(
+      // FileSizeValidationPipe, // 自定义的文件验证管道
+      // 内置的 ParseFilePipe 会对文件进行验证
+      new ParseFilePipe({
+        validators: [
+          // 限制文件大小
+          // new MaxFileSizeValidator({
+          //   maxSize: 10 * 2 ** 20,
+          // }),
+          new MyFileValidator({}),
+          // 限制文件类型
+          new FileTypeValidator({
+            fileType: 'image/jpeg',
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body() body,
+  ) {
+    console.log('upload body', body);
+    console.log('file', file);
+  }
+  @Post('uploadFiles')
+  @UseInterceptors(
+    // formData 字段名，文件数，option
+    FilesInterceptor('files', 2, {
+      dest: 'uploads',
+    }),
+  )
+  uploadFiles(
+    @UploadedFiles()
+    files: Express.Multer.File[],
+    @Body() body,
+  ) {
+    console.log('upload body', body);
+    console.log('files', files);
+  }
+
+  // 上传多字段文件
+  @Post('uploadMultipleFields')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'avatar',
+        maxCount: 1,
+      },
+      {
+        name: 'background',
+        maxCount: 1,
+      },
+    ]),
+  )
+  uploadMultipleFields(
+    @UploadedFiles()
+    files: {
+      avatar: Express.Multer.File[];
+      background: Express.Multer.File[];
+    },
+    @Body() body,
+  ) {
+    console.log('body', body);
+    console.log('files', files);
+  }
+  @Post('uploadAnyField')
+  @UseInterceptors(
+    AnyFilesInterceptor({
+      // dest: 'uploads',
+      storage: storage,
+    }),
+  )
+  uploadAnyFiles(@UploadedFiles() files: Express.Multer.File[], @Body() body) {
+    console.log('body', body);
+    console.log('files', files);
   }
   onApplicationBootstrap() {
     console.log('Bbb Controller onApplicationBootstrap');
