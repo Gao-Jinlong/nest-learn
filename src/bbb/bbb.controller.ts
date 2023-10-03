@@ -24,11 +24,13 @@ import {
   ParseEnumPipe,
   ParseUUIDPipe,
   DefaultValuePipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BbbService } from './bbb.service';
 import { CreateBbbDto } from './dto/create-bbb.dto';
 import { UpdateBbbDto } from './dto/update-bbb.dto';
 import { TimeInterceptor } from 'src/aop/time/time.interceptor';
+import { MyValidationPipe } from 'src/aop/myValidation/myValidation.pipe';
 
 @Controller('bbb')
 export class BbbController
@@ -42,8 +44,11 @@ export class BbbController
   constructor(private readonly bbbService: BbbService) {}
 
   @Post()
-  create(@Body() createBbbDto: CreateBbbDto) {
-    return this.bbbService.create(createBbbDto);
+  create(@Body(MyValidationPipe) createBbbDto: CreateBbbDto) {
+    return {
+      msg: this.bbbService.create(createBbbDto),
+      body: createBbbDto,
+    };
   }
 
   @Get()
@@ -120,7 +125,7 @@ export class BbbController
     array: number[],
     @Query('enumParse', new ParseEnumPipe(HttpStatus)) // 枚举类型转换，如果入参不在枚举范围内则会报错
     enumParse: HttpStatus,
-    @Query('uuid', new ParseUUIDPipe())
+    @Query('uuid', new ParseUUIDPipe()) // uuid 通过 nodejs 的 uuid 包生成 require('uuid').v4()
     uuid: string,
     @Query('defaultValue', new DefaultValuePipe('default'))
     defaultValue: string,

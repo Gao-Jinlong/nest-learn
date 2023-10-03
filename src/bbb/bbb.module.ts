@@ -23,7 +23,18 @@ import { Request, Response } from 'express';
     forwardRef(() => AaaModule),
   ],
   controllers: [BbbController],
-  providers: [BbbService],
+  providers: [
+    BbbService,
+    {
+      provide: 'validation_options',
+      useFactory() {
+        return {
+          name: String,
+          age: Number,
+        };
+      },
+    },
+  ],
 })
 export class BbbModule
   implements

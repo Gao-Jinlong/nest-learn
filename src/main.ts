@@ -26,7 +26,7 @@ async function bootstrap() {
   app.useGlobalGuards(new RolesGuard()); // 全局守卫
   app.useGlobalInterceptors(new LoggingInterceptor()); // 全局拦截器
   app.useGlobalPipes(new ValidationPipe()); // 全局管道
-  app.useGlobalFilters(new HttpExceptionFilter()); // 全局异常过滤
+  // app.useGlobalFilters(new HttpExceptionFilter()); // 全局异常过滤
   // aop 执行顺序
   // request => Middleware => Guard => Interceptor(before) => Pipe(处理参数) => handler => Interceptor(after) => Exception Filter => response
 
