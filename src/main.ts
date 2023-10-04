@@ -8,10 +8,16 @@ import * as session from 'express-session';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { TimeInterceptor } from './aop/time/time.interceptor';
+import { MyLogger } from './log/entities/myLogger';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true, // 支持跨域
+    // logger: ['error', 'warn', 'log', 'debug', 'verbose'], // 日志级别，false 不打印日志
+    // logger: new MyLogger(), // 自定义日志
+    bufferLogs: true, // 缓存日志，直到 useLogger 注入日志实例
   });
+
+  app.useLogger(app.get(MyLogger)); // 从容器中获取日志实例，这样可以在日志中使用依赖注入
 
   app.use(
     session({

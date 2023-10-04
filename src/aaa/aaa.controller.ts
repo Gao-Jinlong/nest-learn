@@ -26,6 +26,8 @@ import { LoggingInterceptor } from './aop/LoggingInterceptor';
 import { ValidationPipe } from './aop/ValidationPipe';
 import { HttpExceptionFilter } from './aop/HttpExceptionFilter';
 import { ForbiddenExceptionFilter } from './aop/ForbiddenException.filter';
+import { MyGlobalLogger } from 'src/log/entities/myLogger';
+import { DynamicLogger } from 'src/log/entities/dynamic';
 @Controller('aaa')
 @UseGuards(RolesGuard) // 路由守卫
 @UseInterceptors(new LoggingInterceptor()) // 拦截器
@@ -41,6 +43,9 @@ export class AaaController
 {
   constructor(
     private readonly aaaService: AaaService,
+    private readonly logger: MyGlobalLogger,
+    private readonly dynamicLogger: DynamicLogger,
+
     // dynamic module exports
     @Inject('DYNAMIC_OPTIONS_CONFIG')
     private readonly options: Record<string, any>,
@@ -56,6 +61,17 @@ export class AaaController
   findAll() {
     // throw new ForbiddenException();
     return { msg: this.aaaService.findAll(), dynamicOptions: this.options };
+  }
+
+  @Get('logger')
+  testLogger() {
+    this.logger.log('log');
+    return 'log';
+  }
+  @Get('dynamicLogger')
+  testDynamicLogger() {
+    this.dynamicLogger.log('dynamicLogger');
+    return 'dynamicLogger';
   }
 
   @Get(':id')

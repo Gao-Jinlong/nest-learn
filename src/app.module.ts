@@ -7,9 +7,17 @@ import { DecorateModule } from './decorate/decorate.module';
 import { DynamicallyModule } from './dynamically/dynamically.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TimeInterceptor } from './aop/time/time.interceptor';
+import { LogModule } from './log/log.module';
+import { MyLogger } from './log/entities/myLogger';
 
 @Module({
-  imports: [AaaModule, BbbModule, DecorateModule, DynamicallyModule],
+  imports: [
+    AaaModule,
+    BbbModule,
+    DecorateModule,
+    DynamicallyModule,
+    LogModule.register('Ginlon'),
+  ],
   controllers: [AppController],
   // IoC provider 支持的几种注入方式，useClass, useValue, useFactory, useExisting
   providers: [
@@ -56,6 +64,7 @@ import { TimeInterceptor } from './aop/time/time.interceptor';
       provide: APP_INTERCEPTOR,
       useClass: TimeInterceptor,
     },
+    MyLogger,
   ],
 })
 export class AppModule implements NestModule {
